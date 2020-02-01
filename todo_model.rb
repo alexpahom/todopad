@@ -1,6 +1,4 @@
 require 'mongoid'
-require 'pry'
-
 Mongoid.load! '/mnt/d/projects/todopad/mongoid.config'
 
 class Task
