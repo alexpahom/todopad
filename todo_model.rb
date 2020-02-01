@@ -9,9 +9,11 @@ class Task
   field :rank, type: Integer
   field :status, type: String
 
-  validates :title, presence: true
-  validates :rank, presence: true
-  validates :status, presence: true
+  validates :title, presence: true, length: { maximum: 30 }
+  validates :rank, presence: true, numericality: { only_integer: true }, uniqueness: {
+      scope: :status, message: 'Error! Cannot have the same rank withing the same status'
+  }
+  validates :status, presence: true, inclusion: { in: %i(open progress close) }
 
   index(title: 'text')
 end
