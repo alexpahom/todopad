@@ -7,5 +7,6 @@ gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'thin'
 gem 'pry'
+gem 'rake'
 
 # gem "rails"
