@@ -8,5 +8,6 @@ gem 'sinatra-contrib'
 gem 'thin'
 gem 'pry'
 gem 'rake'
+gem 'rack-test'
 
 # gem "rails"

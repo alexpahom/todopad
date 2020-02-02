@@ -1,12 +1,7 @@
 require_relative '../test_helper'
-require 'minitest/assertions'
-require 'pry'
 
 class TodoModelTest < BaseCase
-  include Minitest::Assertions
-
   describe 'Task should be working' do
-
     def err
       @err = @task.errors.messages
     end

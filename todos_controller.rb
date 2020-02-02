@@ -17,7 +17,7 @@ namespace '/api/v1' do
     end
 
     def task
-      @task ||= Task.where(id: id).first
+      @task ||= Task.where(id: params[:id]).first
     end
 
     def halt_unless_found!
@@ -39,6 +39,7 @@ namespace '/api/v1' do
   end
 
   post '/todos' do
+    binding.pry
     task = Task.new(json_params)
     halt 422, serialize(task) unless task.save
 
