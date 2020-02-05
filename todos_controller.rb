@@ -2,6 +2,7 @@ require 'sinatra'
 require 'sinatra/namespace'
 require_relative 'todo_model'
 
+set :port, 4568
 namespace '/api/v1' do
   before { content_type 'application/json' }
 
@@ -30,7 +31,11 @@ namespace '/api/v1' do
   end
 
   get '/todos' do
-    Task.all.map { |task| TaskSerializer.new(task) }.to_json
+    all_tasks = Task.all.map { |task| TaskSerializer.new(task) }
+    # TODO: not finished
+    all_tasks.map do |task|
+      { title: task.title, rank: task.rank, id: task.id }.to_json
+    end
   end
 
   get '/todos/:id' do |id|
