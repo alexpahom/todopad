@@ -32,7 +32,14 @@ namespace '/api/v1' do
   end
 
   get '/todos' do
-    Task.all.map { |task| TaskSerializer.new(task) }.to_json
+    tasks = {}
+    %i(open progress close).each do |status|
+      tasks[status] = Task
+                      .where(status: status)
+                      .order_by([:rank, :asc])
+                      .map { |task| TaskSerializer.new task }
+    end
+    tasks.to_json
   end
 
   get '/todos/:id' do |id|
