@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/namespace'
 require_relative 'todo_model'
+require 'pry'
 
 set :port, 4568
 namespace '/api/v1' do
@@ -31,11 +32,7 @@ namespace '/api/v1' do
   end
 
   get '/todos' do
-    all_tasks = Task.all.map { |task| TaskSerializer.new(task) }
-    # TODO: not finished
-    all_tasks.map do |task|
-      { title: task.title, rank: task.rank, id: task.id }.to_json
-    end
+    Task.all.map { |task| TaskSerializer.new(task) }.to_json
   end
 
   get '/todos/:id' do |id|
@@ -44,7 +41,6 @@ namespace '/api/v1' do
   end
 
   post '/todos' do
-    binding.pry
     task = Task.new(json_params)
     halt 422, serialize(task) unless task.save
 
