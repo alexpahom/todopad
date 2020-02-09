@@ -19,8 +19,8 @@ class Task
   index(title: 'text')
 
   before_create :generate_rank
-  before_update :upshift_ranks
-  after_destroy :downshift_ranks
+  #before_update :upshift_ranks
+  #after_destroy :downshift_ranks
 
   def generate_rank
     self.rank = Task.where(rank: self.rank).count + 1
