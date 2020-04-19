@@ -5,7 +5,17 @@ require 'pry'
 
 set :port, 4568
 namespace '/api/v1' do
-  before { content_type 'application/json' }
+  before do
+    content_type 'application/json'
+    headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    headers['Access-Control-Allow-Origin'] = '*'
+    headers['Access-Control-Allow-Headers'] = 'accept, authorization, origin'
+  end
+
+  options '*' do
+    response.headers['Allow'] = 'HEAD,GET,PUT,DELETE,OPTIONS,POST'
+    response.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
+  end
 
   helpers do
     def base_url
@@ -52,6 +62,7 @@ namespace '/api/v1' do
     halt 422, serialize(task) unless task.save
 
     response.headers['Location'] = "#{base_url}/api/v1/todos/#{task.id}"
+    response.body = serialize task
     status 201
   end
 
