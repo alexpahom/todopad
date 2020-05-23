@@ -32,7 +32,7 @@ class Task
     if initial_status == status
       offset = initial_rank < rank ? -1 : 1
       min_rank, max_rank = [initial_rank, rank].sort
-      Task.where(status: status, rank: (min_rank + 1..max_rank)).inc(rank: offset)
+      Task.where(status: status, rank: (min_rank..max_rank)).inc(rank: offset)
     else
       Task.where(status: initial_status, :rank.gt => initial_rank).inc(rank: -1)
       Task.where(status: status, :rank.gte => rank).inc(rank: 1)
