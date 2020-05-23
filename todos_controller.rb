@@ -2,7 +2,7 @@ require 'sinatra'
 require 'sinatra/namespace'
 require_relative 'todo_model'
 require 'pry'
-
+require './db_seeds'
 set :port, 4568
 namespace '/api/v1' do
   before do

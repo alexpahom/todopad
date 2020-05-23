@@ -12,36 +12,33 @@ class Task
 
   validates :title, presence: true, length: { maximum: 30 }
   validates :rank, presence: true, numericality: { only_integer: true }
-  # validates :rank, presence: true, numericality: { only_integer: true }, uniqueness: {
-  #     scope: :status, message: 'Error! Cannot have the same rank withing the same status'
-  # }, on: :update
+  validates :rank, presence: true, numericality: { only_integer: true }#, uniqueness: {
+  #    scope: :status, message: 'Error! Cannot have the same rank withing the same status'
+  #}, on: :update
   validates :status, presence: true, inclusion: { in: %i(open progress close) }
 
   index(title: 'text')
 
-  before_create :generate_rank
-  #before_update :upshift_ranks
-  #after_destroy :downshift_ranks
+  before_validation :generate_rank
+  before_update :process_ranks
 
   def generate_rank
-    self.rank = Task.where(rank: self.rank).count + 1
+    return unless new_record?
+    self.rank = Task.where(status: status).count + 1
   end
 
-  def upshift_ranks
-    tasks_to_process = Task.where(:rank.gte => self.rank)
-    tasks_to_process.each do |task|
-      task.rank += 1
-      task.save
+  def process_ranks
+    initial_status, initial_rank = Task.where(id: id).pluck(:status, :rank).first
+    if initial_status == status
+      offset = initial_rank < rank ? -1 : 1
+      min_rank, max_rank = [initial_rank, rank].sort
+      Task.where(status: status, rank: (min_rank + 1..max_rank)).inc(rank: offset)
+    else
+      Task.where(status: initial_status, :rank.gt => initial_rank).inc(rank: -1)
+      Task.where(status: status, :rank.gte => rank).inc(rank: 1)
     end
   end
 
-  def downshift_ranks
-    tasks_to_process = Task.where(:rank.gt => self.rank)
-    tasks_to_process.each do |task|
-      task.rank -= 1
-      task.save
-    end
-  end
 end
 
 class TaskSerializer
