@@ -2,19 +2,11 @@ require 'sinatra'
 require 'sinatra/namespace'
 require_relative 'todo_model'
 require 'pry'
-
+require './db_seeds'
 set :port, 4568
 namespace '/api/v1' do
   before do
     content_type 'application/json'
-    headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    headers['Access-Control-Allow-Origin'] = '*'
-    headers['Access-Control-Allow-Headers'] = 'accept, authorization, origin'
-  end
-
-  options '*' do
-    response.headers['Allow'] = 'HEAD,GET,PUT,DELETE,OPTIONS,POST'
-    response.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
   end
 
   helpers do
@@ -46,15 +38,15 @@ namespace '/api/v1' do
     %i(open progress close).each do |status|
       tasks[status] = Task
                       .where(status: status)
-                      .order_by([:rank, :asc])
+                      .order_by(%i(rank asc))
                       .map { |task| TaskSerializer.new task }
     end
     tasks.to_json
   end
 
-  get '/todos/:id' do |id|
+  get '/todos/:id' do
     halt_unless_found!
-    serialize task
+    serialize(task)
   end
 
   post '/todos' do
@@ -66,13 +58,13 @@ namespace '/api/v1' do
     status 201
   end
 
-  patch '/todos/:id' do |id|
+  patch '/todos/:id' do
     halt_unless_found!
     halt 422, serialize(task) unless task.update_attributes(json_params)
-    serialize task
+    serialize(task)
   end
 
-  delete '/todos/:id' do |id|
+  delete '/todos/:id' do
     task.destroy if task
     status 204
   end
