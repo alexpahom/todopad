@@ -10,6 +10,18 @@ class TodoModelTest < BaseCase
       @rand = Time.now.strftime('%d%H%M%S%L').to_i
     end
 
+    it 'rank generated for new record' do
+      @task = Task.create(title: 'Generate rank', status: :open)
+      assert @task.rank, 'Rank was not generated'
+    end
+
+    it 'rank remains for existing record' do
+      @task = Task.first
+      rank = @task.rank
+      @task.update(title: 'Test title')
+      assert_equal @task.rank, rank, 'Rank should not be changed'
+    end
+
     it 'Title should present' do
       @task = Task.create(rank: rand, status: :open)
       assert @task.invalid?, "Task title cannot be empty!. #{err}"
@@ -41,7 +53,7 @@ class TodoModelTest < BaseCase
         assert @task.valid?, "Task of #{status} status should be valid. #{err}"
       end
     end
-    
+
     it 'status cannot be arbitrary' do
       @task = Task.create(title: "Allah case", rank: rand, status: :trololo)
       assert @task.invalid?, "Task of :trololo status should be invalid. #{err}"
@@ -64,6 +76,5 @@ class TodoModelTest < BaseCase
       assert @task.invalid?, "Should not save task with existing rank. #{err}"
     end
   end
-
 
 end
