@@ -10,6 +10,19 @@ class TodoModelTest < BaseCase
       @rand = Time.now.strftime('%d%H%M%S%L').to_i
     end
 
+    it 'generate_rank generates rank for new record' do
+      @task = Task.new(title: 'Manual rank generation')
+      @task.generate_rank
+      assert @task.rank, 'Rank was not generated'
+    end
+
+    it 'generate_rank returns for existing record' do
+      @task = Task.first
+      init_rank = @task.rank
+      @task.generate_rank
+      assert_equal @task.rank, init_rank, 'rank should not change for existing record'
+    end
+
     it 'rank generated for new record' do
       @task = Task.create(title: 'Generate rank', status: :open)
       assert @task.rank, 'Rank was not generated'
@@ -59,22 +72,21 @@ class TodoModelTest < BaseCase
       assert @task.invalid?, "Task of :trololo status should be invalid. #{err}"
     end
 
-    it 'rank should present' do
-      @task = Task.create(title: "Allah case", status: :open)
-      assert @task.invalid?, "Task cannot be without rank. #{err}"
-    end
-
     it 'rank should be integer' do
-      @task = Task.create(title: "Allah case", status: :open, rank: 1.40)
+      @task = Task.first
+      @task.update(rank: 1.40)
       assert @task.invalid?, "Task cannot save float rank. #{err}"
     end
 
-    it 'rank should be unique for certain status' do
-      rank = rand
-      @task1 = Task.create(title: "Regular task", status: :close, rank: rank)
-      @task = Task.create(title: "Regular task2", status: :close, rank: rank)
-      assert @task.invalid?, "Should not save task with existing rank. #{err}"
-    end
+    # Not implemented
+    # it 'rank should be unique for certain status' do
+    #   rank = rand
+    #   @task1 = Task.create(title: "Regular task", status: :close)
+    #   @task = Task.create(title: "Regular task2", status: :close)
+    #   @task.update(rank: rank)
+    #   @task1.update(rank: rank)
+    #   refute_equal @task.rank, @task1.rank, "Should not save task with existing rank. #{err}"
+    # end
   end
 
 end
