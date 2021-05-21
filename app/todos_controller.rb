@@ -51,7 +51,7 @@ namespace '/api/v1' do
 
   post '/todos' do
     task = Task.new(json_params)
-    halt 422, serialize(task) unless task.save
+    halt 422, task.errors.full_messages.to_json unless task.save
 
     response.headers['Location'] = "#{base_url}/api/v1/todos/#{task.id}"
     response.body = serialize task
@@ -60,7 +60,7 @@ namespace '/api/v1' do
 
   patch '/todos/:id' do
     halt_unless_found!
-    halt 422, serialize(task) unless task.update_attributes(json_params)
+    halt 422, task.errors.full_messages.to_json unless task.update_attributes(json_params)
     serialize(task)
   end
 

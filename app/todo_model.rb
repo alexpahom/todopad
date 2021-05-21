@@ -10,7 +10,10 @@ class Task
   field :rank, type: Integer
   field :status, type: Symbol
 
-  validates :title, presence: true, length: { maximum: 30 }
+  validates :title, presence: true, length:
+    { minimum: 3, maximum: 30, message: 'Title length should be between 3 and 30 chars' },
+            format: { with: /[\w\d\s()!?"'.,-]/, message: 'Only letters, quotes, punctuation marks' }
+  validates :description, length: { maximum: 255 }
   validates :rank, presence: true, numericality: { only_integer: true }
   validates :rank, presence: true, numericality: { only_integer: true } #, uniqueness: {
   #    scope: :status, message: 'Error! Cannot have the same rank withing the same status'
